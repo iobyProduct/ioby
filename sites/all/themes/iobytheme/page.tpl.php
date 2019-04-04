@@ -137,7 +137,7 @@
                 <li class="leaf"><a href="/about" title="Who we are and why we do what we do">about</a></li>
                 <li class="leaf"><a href="/blog" title="The latest">blog</a></li>
                 <li class="leaf"><a href="/resources/learnfromaleader" title="">resources</a></li>
-                <li class="last leaf"><a href="http://support.ioby.org" title="ioby's Support Center">support</a></li>
+                <li class="last leaf"><a href="https://support.ioby.org" title="ioby's Support Center">support</a></li>
                 </ul>
               </div>
     <?php endif; //main menu ?>
@@ -275,7 +275,7 @@
         <li class="newsletter">
           <!-- Begin MailChimp Signup Form -->
           <div id="mc_embed_signup">
-            <form action="//ioby.us1.list-manage.com/subscribe/post?u=f3c712aa320de5a6d109211a6&amp;id=71207383ff" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank">
+            <form action="https://page.ioby.org/LP-Subscribe.html" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank">
               <div class="mc-field-group">
                 <label for="mce-EMAIL">email address</label>
                 <input type="text" value="" name="EMAIL" class="required email" id="mce-EMAIL">
@@ -309,7 +309,6 @@
 
   <section class="credits">
     copyright &copy; <?php print date("Y"); ?> ioby, a 501(c)(3) nonprofit<br/>
-    site by <a href="http://www.newsignature.com" target="_blank">New Signature</a>
   </section>
 </div>
 </footer>
