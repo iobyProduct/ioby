@@ -5,6 +5,7 @@
 /sites/*/files
 /sites/*/private
 /sites/*/privatefiles
+/files
 
 # Ignore dev settings paths and files
 /sites/*.newsig.com
@@ -31,6 +32,7 @@ salesforce-settings.inc
 [Ww]eb.config
 
 #IDE project/settings folders
+.idea/
 nbproject/
 /.buildpath
 /.project
