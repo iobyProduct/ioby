@@ -338,7 +338,7 @@ function iobytheme_preprocess_page(&$vars) {
       //Add the default galleryview CSS before iobytheme-specific CSS files
     ];
     //drupal_add_css(path_to_theme() . '/js/galleryview/css/jquery.galleryview.css', $options);
-    drupal_add_css(path_to_theme() . '/patternlab/public/css/plugins.min.css', $options);
+    drupal_add_css(path_to_theme() . '/css/plugins.min.css', $options);
     $vars['styles'] = drupal_get_css();
 
     $options['group'] = JS_THEME;
