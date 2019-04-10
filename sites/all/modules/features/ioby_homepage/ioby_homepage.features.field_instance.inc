@@ -191,7 +191,7 @@ function ioby_homepage_field_default_field_instances() {
   $field_instances['bean-ioby_update-field_bean_image'] = array(
     'bundle' => 'ioby_update',
     'deleted' => 0,
-    'description' => '',
+    'description' => 'Upload an image that is at least 530px wide, the height can be variable. The images should have a landscape to square orientation.',
     'display' => array(
       'default' => array(
         'label' => 'above',
@@ -223,7 +223,6 @@ function ioby_homepage_field_default_field_instances() {
       'active' => 1,
       'module' => 'image',
       'settings' => array(
-        'maxlength_js_label' => 'Content limited to @limit characters, remaining: <strong>@remaining</strong>',
         'preview_image_style' => 'thumbnail',
         'progress_indicator' => 'throbber',
       ),
@@ -2246,6 +2245,7 @@ function ioby_homepage_field_default_field_instances() {
   t('Title Line 2');
   t('Upload an image that is at least 1400px wide by 787px tall. Note that the image resizes and crops (automatically within drupal - ie: you do not need to upload another image) to 700px wide by 394px tall on tablet sized devices, cropping approximately 5% of the original image on the right and left. Then on mobile deviecs it crops further to 440px wide by 216px tall. ');
   t('Upload an image that is at least 380px wide by 380px tall, with a 1:1 ratio. Note that each image will be cropped by their svg mask (the unique shapes). ');
+  t('Upload an image that is at least 530px wide, the height can be variable. The images should have a landscape to square orientation.');
   t('Upload an image that is at least 641px wide, the height can be variable. The images should have a landscape orientation.<br>When blank, this field uses the first photo listed in Add Project Photo(s) on the Project node.');
   t('When blank, this field uses the Project Tagline from the Project node.');
   t('When blank, this field uses the Title from the Project node.');
