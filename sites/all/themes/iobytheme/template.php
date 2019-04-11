@@ -642,7 +642,7 @@ function iobytheme_preprocess_project_feature_bundle(&$vars, $bundle, $view_mode
   if (!empty($raised)) {
     $vars['percent'] = $raised['pct_done'];
     $vars['width'] = abs(100 - $raised['pct_done']);
-    $vars['amount'] = number_format($raised['amount_needed'], 0, '.', ',');
+    $vars['amount'] = number_format($raised['amount_to_go'], 0, '.', ',');
   }
 
 
