@@ -227,6 +227,10 @@ function system_list_reset() {
   drupal_static_reset('list_themes');
   cache_clear_all('bootstrap_modules', 'cache_bootstrap');
   cache_clear_all('system_list', 'cache_bootstrap');
+
+  // Clean up the bootstrap file scan cache.
+  drupal_static_reset('_drupal_file_scan_cache');
+  cache_clear_all('_drupal_file_scan_cache', 'cache_bootstrap');
 }
 
 /**
@@ -400,7 +404,11 @@ function module_enable($module_list, $enable_dependencies = TRUE) {
     // Create an associative array with weights as values.
     $module_list = array_flip(array_values($module_list));
 
-    while (list($module) = each($module_list)) {
+    // The array is iterated over manually (instead of using a foreach) because
+    // modules may be added to the list within the loop and we need to process
+    // them.
+    while ($module = key($module_list)) {
+      next($module_list);
       if (!isset($module_data[$module])) {
         // This module is not found in the filesystem, abort.
         return FALSE;
@@ -536,7 +544,11 @@ function module_disable($module_list, $disable_dependents = TRUE) {
     $module_list = array_flip(array_values($module_list));
 
     $profile = drupal_get_profile();
-    while (list($module) = each($module_list)) {
+    // The array is iterated over manually (instead of using a foreach) because
+    // modules may be added to the list within the loop and we need to process
+    // them.
+    while ($module = key($module_list)) {
+      next($module_list);
       if (!isset($module_data[$module]) || !$module_data[$module]->status) {
         // This module doesn't exist or is already disabled, skip it.
         unset($module_list[$module]);
@@ -936,7 +948,9 @@ function module_invoke($module, $hook) {
  *
  * @return
  *   An array of return values of the hook implementations. If modules return
- *   arrays from their implementations, those are merged into one array.
+ *   arrays from their implementations, those are merged into one array
+ *   recursively. Note: integer keys in arrays will be lost, as the merge is
+ *   done using array_merge_recursive().
  *
  * @see drupal_alter()
  */
