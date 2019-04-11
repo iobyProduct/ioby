@@ -588,7 +588,7 @@ function ioby_homepage_field_default_field_instances() {
     'entity_type' => 'bean',
     'field_name' => 'field_featured_project_image',
     'label' => 'Featured Project Image',
-    'required' => 1,
+    'required' => 0,
     'settings' => array(
       'alt_field' => 0,
       'default_image' => 0,
