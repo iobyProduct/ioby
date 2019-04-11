@@ -680,7 +680,7 @@ function iobyproject_incentives() {
   return array('#markup' => theme('iobyproject-incentives', array('incentives' => $incentives)));
 }
 
-function iobyproject_countdown($node, $raw = FALSE) {
+function iobyproject_countdown($node = FALSE, $raw = FALSE) {
   if (empty($node)) {
     $node = menu_get_object();
   }
