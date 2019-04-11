@@ -25,7 +25,7 @@
             <div class="featured-project__progress-bar-inside" style="width: <?php print $width; ?>%;"></div>
           </div><!--/.featured-project__progress-bar-->
           <div class="featured-project__progress-bar-meta">
-            <?php if ($percent !== 100): ?>
+            <?php if ($percent != 100): ?>
               <span class="featured-project__progress-bar-amount">$<?php print $amount; ?> still needed</span>
               <?php if (!empty($countdown)) : ?>
               <span class="featured-project__progress-bar-days"><?php print $countdown; ?></span>
