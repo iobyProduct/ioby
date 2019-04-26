@@ -509,6 +509,7 @@ $(function(){
 
           // a function to close the offcanvas
           var OffcanvasClose = function(e) {
+              $offcanvas_trigger.unbind('click touchstart');
               // close all accordians if a user closes the offcanvas nav
               $('.offcanvas__primary-nav').find('.is-open').removeClass('is-open');
               $('.offcanvas__primary-nav').find('a').siblings('ul').slideUp();
@@ -522,6 +523,13 @@ $(function(){
 
               // Stop polling for click outside.
               $document.unbind('click touchstart', PollForOffcanvasOutsideClick);
+
+              setTimeout(function (){
+              // close the offcanvas menu
+              $offcanvas_trigger.bind("click touchstart", function(e){
+                OffcanvasOpen(e);
+              });
+            }, 500);
           };
 
           // a function to close the desktop "cities" button dropdown which requires click
@@ -535,6 +543,7 @@ $(function(){
 
           // a function to open the offcanvas
           var OffcanvasOpen = function(e) {
+            $offcanvas_close.unbind('click touchstart');
             $offcanvas.addClass('is-open');
             $offcanvas_height = $offcanvas_content.height();
 
@@ -549,16 +558,30 @@ $(function(){
             setTimeout(function(){
               $document.bind('click touchstart', PollForOffcanvasOutsideClick);
             }, 200);
+
+            setTimeout(function (){
+              // close the offcanvas menu
+              $offcanvas_close.bind("click touchstart", function(e){
+                OffcanvasClose(e);
+              });
+            }, 500);
+
           };
+
+          // $offcanvas.addClass('displaynone');
+          OffcanvasOpen();
+          setTimeout(function(){
+            OffcanvasClose();
+          }, 750);
+          setTimeout(function(){
+            $offcanvas.removeClass('displaynone');
+          }, 1000);
+
           // open the offcanvas menu
           $offcanvas_trigger.bind("click touchstart", function(e){
             OffcanvasOpen(e);
           });
 
-          // close the offcanvas menu
-          $offcanvas_close.bind("click touchstart", function(e){
-            OffcanvasClose(e);
-          });
         });
 
 
