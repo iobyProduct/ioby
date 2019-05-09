@@ -101,6 +101,7 @@ AddType image/svg+xml svg svgz
   RewriteRule ^ http://www.ioby.org/blog [L,R=301]
 
   # Force https
+  RewriteCond %{HTTP_HOST} !\.cloudwaysapps\.com [NC]  # exclude DrupalAid Dev domains
   RewriteCond %{HTTP_HOST} ioby\.org$ [NC]
   RewriteCond %{HTTP_HOST} !^demo\.ioby\.org$ [NC]
   RewriteCond %{HTTPS} off
@@ -108,6 +109,7 @@ AddType image/svg+xml svg svgz
 
 
   # Redirect any wildcard cnames to www.ioby.org
+  RewriteCond %{HTTP_HOST} !\.cloudwaysapps\.com [NC]  # exclude DrupalAid Dev domains
   RewriteCond %{HTTP_HOST} ioby\.org$ [NC]
   RewriteCond %{HTTP_HOST} !^www\.ioby\.org$ [NC]
   RewriteCond %{HTTP_HOST} !^demo\.ioby\.org$ [NC]
