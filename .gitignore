@@ -66,3 +66,6 @@ drushrc.php
 *.rej
 .svn/
 /*.sql
+settings.local.php
+modules/drupalaid-dev/
+sites/all/modules/drupalaid-dev/
