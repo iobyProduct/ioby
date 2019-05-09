@@ -1,5 +1,0 @@
-name = IOBY FAQ
-description = "The IOBY FAQ for the help section"
-package = IOBY
-core = 7.x
-version = "7.x-1.0"
