@@ -62,7 +62,7 @@
  *     ),
  *   );
  *
- *   For backwards compatability, no changes are required to support states,
+ *   For backwards compatibility, no changes are required to support states,
  *   but it is recommended to provide a better UI for end users.
  *
  *   For example, the following example is equivalent to returning the raw
@@ -75,9 +75,11 @@
  *   );
  */
 function hook_entity_diff($old_entity, $new_entity, $context) {
+  $results = array();
+
   if ($context['entity_type'] == 'node') {
     $type = node_type_get_type($new_entity);
-    $result['title'] = array(
+    $results['title'] = array(
       '#name' => $type->title_label,
       '#old' => array($old_entity->title),
       '#new' => array($new_entity->title),
@@ -87,6 +89,8 @@ function hook_entity_diff($old_entity, $new_entity, $context) {
       ),
     );
   }
+
+  return $results;
 }
 
 /**
@@ -104,6 +108,22 @@ function hook_entity_diff($old_entity, $new_entity, $context) {
  * @see hook_entity_diff()
  */
 function hook_entity_diff_alter(&$entity_diffs, $context) {
+  if ($context['entity_type'] == 'node') {
+    $old_entity = $context['old_entity'];
+    $new_entity = $context['new_entity'];
+    $entity_diffs['custom_vid'] = array(
+      '#name' => t('Second VID'),
+      '#old' => array($old_entity->vid),
+      '#new' => array($new_entity->vid),
+      '#weight' => 5,
+    );
+    $entity_diffs['custom_log'] = array(
+      '#name' => t('Second log'),
+      '#old' => array($old_entity->log),
+      '#new' => array($new_entity->log),
+      '#weight' => 6,
+    );
+  }
 }
 
 /**
