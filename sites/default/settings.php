@@ -514,4 +514,4 @@ if (file_exists(DRUPAL_ROOT . '/sites/default/salesforce-settings.inc')) {
   // This file shouldn't be in source control and should contain the salesforce variables from above
   require(DRUPAL_ROOT . '/sites/default/salesforce-settings.inc');
 }
-$conf['maintenance_mode'] = 0;
+#$conf['maintenance_mode'] = 1;
