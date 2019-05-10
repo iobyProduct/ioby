@@ -1309,9 +1309,11 @@ button.mfp-close {
   height: 70px;
   .item-list{
     ul{
-    height: 60px;
-    margin: 10px 10px 10px 150px !important;
+      height: 60px;
+      margin: 10px auto;
       box-sizing: border-box;
+      display: flex;
+      justify-content: center;
 
       li{
         height: 100%;
@@ -1325,6 +1327,7 @@ button.mfp-close {
         text-align: center;
         color: gray;
         position: relative;
+        .last {margin-right:0 !important;}
 
         &:not(:last-child) {
           &:after {
