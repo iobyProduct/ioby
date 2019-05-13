@@ -30,7 +30,7 @@
       @media (max-width: 600px) {
         font-size: 30px;
         top: 0;
-        display: inline;
+        // display: inline; // commenting this out so that it's always displayed as block. IR-63
       }
     }
   }
