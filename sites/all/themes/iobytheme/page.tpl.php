@@ -161,7 +161,7 @@
         </div><!--/.page-header__right-->
       </div><!--/.page-header__inside-->
     </header>
-    <div class="offcanvas">
+    <div class="offcanvas displaynone">
       <div class="offcanvas__content">
         <div class="offcanvas__top">
           <button class="offcanvas__close">
