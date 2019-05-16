@@ -1531,9 +1531,12 @@ div.horizontal-tabs ul.horizontal-tabs-list {
   padding: 10px 0;
   margin: 0;
   background-color: transparent;
-
+  display: flex;
+  flex-wrap: nowrap;
+  
   @media (max-width: $small-break) {
     font-size: 1em;
+    display: block;
   }
 
   li {
@@ -1543,11 +1546,13 @@ div.horizontal-tabs ul.horizontal-tabs-list {
     border:0;
     font-size: 11px;
     margin-right: 0px;
+    white-space: nowrap;
 
     @media (max-width: $small-break) {
       display: flex;
       font-size: 1.3em;
       margin-bottom: 15px;
+      white-space: normal;
     }
   }
 

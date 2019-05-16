@@ -361,6 +361,8 @@
 
           <div class="page-footer__bottom">
 
+            <?php print render($page['footer']); ?>
+
             <div class="page-footer__left">
               <?php print $footer_menu; ?>
             </div><!--/.page-footer__left-->
