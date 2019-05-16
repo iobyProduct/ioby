@@ -69,3 +69,4 @@ drushrc.php
 settings.local.php
 modules/drupalaid-dev/
 sites/all/modules/drupalaid-dev/
+.ddev
