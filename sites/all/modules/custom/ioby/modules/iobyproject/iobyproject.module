@@ -539,36 +539,38 @@ function iobyproject_location() {
     return '';
   }
 
-  $loc = $node->field_project_address;
+  if (isset($node->field_project_address)){
+    $loc = $node->field_project_address;
+  
+    if(array_key_exists(LANGUAGE_NONE, $loc)) {
+      $lat = $loc[LANGUAGE_NONE][0]['latitude'];
+      $lon = $loc[LANGUAGE_NONE][0]['longitude'];
+      $has_coordinates = (int)($lat + $lon);
+      if($has_coordinates) {
+        //setting up array per /help/gmap/api and help/gmap/array
+        $map = array(
+          'id'          => 'project-map',
+          'width'       => '304px',
+          'height'      => '250px',
+          'latitude'    => $lat,
+          'longitude'   => $lon,
+          'zoom'        => 15,
+          'maptype'     => 'Map',
+          'controltype' => 'Small',
+          'mtc'         => 'menu',
+          'markername'  => 'lblue',
+          'markers'     => array(
+            array(
+              'text'      => $node->title,
+              'latitude'  => $lat,
+              'longitude' => $lon,
+              ),
+            )
+          );
+        $element = array('#type' => 'gmap', '#gmap_settings' => $map);
 
-  if(array_key_exists(LANGUAGE_NONE, $loc)) {
-    $lat = $loc[LANGUAGE_NONE][0]['latitude'];
-    $lon = $loc[LANGUAGE_NONE][0]['longitude'];
-    $has_coordinates = (int)($lat + $lon);
-    if($has_coordinates) {
-      //setting up array per /help/gmap/api and help/gmap/array
-      $map = array(
-        'id'          => 'project-map',
-        'width'       => '304px',
-        'height'      => '250px',
-        'latitude'    => $lat,
-        'longitude'   => $lon,
-        'zoom'        => 15,
-        'maptype'     => 'Map',
-        'controltype' => 'Small',
-        'mtc'         => 'menu',
-        'markername'  => 'lblue',
-        'markers'     => array(
-          array(
-            'text'      => $node->title,
-            'latitude'  => $lat,
-            'longitude' => $lon,
-            ),
-          )
-        );
-      $element = array('#type' => 'gmap', '#gmap_settings' => $map);
-
-      return array('#markup' => drupal_render($element));
+        return array('#markup' => drupal_render($element));
+      }
     }
   }
 }
