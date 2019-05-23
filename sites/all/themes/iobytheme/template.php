@@ -359,7 +359,9 @@ function iobytheme_preprocess_page(&$vars) {
     $vars['footer_logos'][] = node_view($node, 'teaser');
   }
 
-  $main_menu = drupal_render(menu_tree_output(menu_tree_all_data('main-menu')));
+  //$main_menu = drupal_render(menu_tree_output(menu_tree_all_data('main-menu')));
+  $menu_output = menu_tree_output(menu_tree_all_data('main-menu'));
+  $main_menu = drupal_render($menu_output);
   $vars['main_menu'] = preg_replace('/(leaf|collapsed)/','',$main_menu);
 
   if (!empty($vars['node']) && $vars['node']->nid == '34783') {
