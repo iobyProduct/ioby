@@ -464,7 +464,7 @@ function iobyproject_funding($nid = NULL) {
     $status = PROJECT_STATUS_OPEN;
   }
 
-  $suppress_form = ($status >= PROJECT_STATUS_UNDERWAY && $status != PROJECT_STATUS_FUNDED);
+  $suppress_form = ($status > PROJECT_STATUS_UNDERWAY && $status != PROJECT_STATUS_FUNDED);
 
   $funding = array(
     'raised' => round($info['amount_raised']),
