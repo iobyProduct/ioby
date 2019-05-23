@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Coupon System for Drupal Commerce
+ * Coupon System for Drupal Commerce.
  *
  * This file contains all the major functionality for providing a coupon system
  * to the Drupal Commerce system.
@@ -28,7 +28,6 @@ function commerce_coupon_entity_info() {
     'bundle keys' => array(
       'bundle' => 'type',
     ),
-    'access callback' => 'commerce_coupon_access',
     'module' => 'commerce_coupon',
     'permission labels' => array(
       'singular' => t('coupon'),
@@ -116,6 +115,13 @@ function commerce_coupon_commerce_checkout_pane_info() {
 }
 
 /**
+ * Access callback for coupon types.
+ */
+function commerce_coupon_type_access($op, $type = NULL, $account = NULL) {
+  return user_access('administer coupon types', $account);
+}
+
+/**
  * Checks coupon access for various operations.
  *
  * @param $op
@@ -126,6 +132,7 @@ function commerce_coupon_commerce_checkout_pane_info() {
  *   permissions for all coupons are returned.
  * @param $account
  *   The user to check for. Leave it to NULL to check for the current user.
+ * @return bool
  */
 function commerce_coupon_access($op, $coupon = NULL, $account = NULL) {
   return commerce_entity_access($op, $coupon, $account, 'commerce_coupon');
@@ -231,6 +238,11 @@ function commerce_coupon_code_is_valid($code, $order) {
   // never want that a coupon is applied twice.
   if (commerce_coupon_code_is_in_order($code, $order)) {
     $_commerce_coupon_validation_error_message = t('Sorry, you can only apply a coupon once per order.');
+    return FALSE;
+  }
+
+  // Check coupon status.
+  if ($coupon->is_active == FALSE) {
     return FALSE;
   }
 
@@ -407,6 +419,7 @@ function commerce_coupon_commerce_coupon_type_delete($type) {
  *
  * @param $bundle
  *  The coupon type string to configure.
+ * @param $reset
  */
 function commerce_coupon_type_configure($bundle, $reset) {
   $entity_type = 'commerce_coupon';
@@ -427,10 +440,10 @@ function commerce_coupon_type_configure($bundle, $reset) {
       'settings' => array(),
     );
     if (empty($field)) {
-      $field = field_create_field($field_data);
+      field_create_field($field_data);
     }
     else {
-      $field = field_update_field($field_data);
+      field_update_field($field_data);
     }
   }
 
@@ -469,10 +482,10 @@ function commerce_coupon_type_configure($bundle, $reset) {
     );
 
     if (empty($field)) {
-      $field = field_create_field($field_data);
+      field_create_field($field_data);
     }
     else {
-      $field = field_update_field($field_data);
+      field_update_field($field_data);
     }
   }
 
@@ -510,14 +523,13 @@ function commerce_coupon_type_configure($bundle, $reset) {
 
 /**
  * Returns the name of the specified coupon type or all names keyed by type if
- *  no type is specified.
+ * no type is specified.
  *
  * @param $type
  *   Optional parameter specifying the type whose name to return.
  *
- * @return
- *   Either the specified name, defaulting to the type itself if the name is not
- *     found, or an array of all names keyed by type if no type is passed in.
+ * @return CouponType Either the specified name, defaulting to the type
+ *  itself if the name is not found, or an array of all names keyed by type if no type is passed in.
  */
 function commerce_coupon_type_get_name($type = NULL) {
   $coupon_types = commerce_coupon_get_types();
@@ -553,12 +565,9 @@ function commerce_coupon_type_options_list() {
  *
  * @param $commerce_coupon_id
  *   Integer specifying the coupon id.
- * @param $reset
+ * @param bool $reset
  *   A boolean indicating that the internal cache should be reset.
- * @return
- *   A fully-loaded $commerce_coupon object or FALSE if it cannot be loaded.
- *
- * @see commerce_coupon_load_multiple()
+ * @return mixed A fully-loaded $commerce_coupon object or FALSE if it cannot be loaded.@see commerce_coupon_load_multiple()
  */
 function commerce_coupon_load($commerce_coupon_id, $reset = FALSE) {
   $commerce_coupons = commerce_coupon_load_multiple(array($commerce_coupon_id), array(), $reset);
@@ -568,16 +577,13 @@ function commerce_coupon_load($commerce_coupon_id, $reset = FALSE) {
 /**
  * Load multiple coupons based on certain conditions.
  *
- * @param $commerce_coupon_ids
+ * @param array $commerce_coupon_ids
  *   An array of coupon IDs.
- * @param $conditions
+ * @param array $conditions
  *   An array of conditions to match against the {commerce_coupon} table.
- * @param $reset
+ * @param bool $reset
  *   A boolean indicating that the internal cache should be reset.
- * @return
- *   An array of coupon objects, indexed by coupon id.
- *
- * @see entity_load()
+ * @return array An array of coupon objects, indexed by coupon id.@see entity_load()
  * @see commerce_coupon_load()
  */
 function commerce_coupon_load_multiple($commerce_coupon_ids = array(), $conditions = array(), $reset = FALSE) {
@@ -593,8 +599,7 @@ function commerce_coupon_load_multiple($commerce_coupon_ids = array(), $conditio
  *
  * @param $code
  *   A code of a coupon.
- * @return
- *   A coupon object corresponding to the coupon code.
+ * @return mixed A coupon object corresponding to the coupon code.
  */
 function commerce_coupon_load_by_code($code) {
   $query = new EntityFieldQuery();
@@ -829,7 +834,7 @@ function commerce_coupon_code_is_in_order($code, $order) {
  *   Returns TRUE if it is active else FALSE
  */
 function commerce_coupon_code_is_active($code) {
-  # @TODO: Replace this query with drupal 7 query API
+  // @TODO: Replace this query with drupal 7 query API
   $rs = db_query('SELECT * FROM {commerce_coupon} WHERE code = :code AND is_active = 1', array(':code' => $code));
   $codeObject = $rs->fetchObject();
 
@@ -928,20 +933,18 @@ function commerce_coupon_line_item_title($line_item) {
  *   Line item object with default values.
  */
 function commerce_coupon_line_item_new($coupon, $order_id) {
+  $coupon_wrapper = entity_metadata_wrapper('commerce_coupon', $coupon);
+
   // Create the new line item.
   $line_item = entity_create('commerce_line_item', array(
     'type' => 'commerce_coupon',
     'order_id' => $order_id,
     'quantity' => 1,
-      ));
+  ));
 
   $line_item->sku = $coupon->type . '_' . $coupon->coupon_id;
-  $coupon_wrapper = entity_metadata_wrapper('commerce_coupon', $coupon);
-  $line_item->line_item_label = $coupon_wrapper->type->label() . ': ' . $coupon_wrapper->commerce_coupon_code->value();
-
-  if (!($line_item instanceof EntityMetadataWrapper)) {
-    $line_item_wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
-  }
+  $line_item->line_item_label = $coupon->type . ': ' . $coupon_wrapper->commerce_coupon_code->value();
+  $line_item_wrapper = entity_metadata_wrapper('commerce_line_item', $line_item);
 
   $line_item_wrapper->commerce_coupon_reference = $coupon->coupon_id;
 
@@ -967,7 +970,7 @@ function commerce_coupon_line_item_configuration() {
 
   if (empty($field)) {
     $field = commerce_coupon_reference_field($field_name, 1);
-    $field = field_create_field($field);
+    field_create_field($field);
   }
 
   if (empty($instance)) {
@@ -1011,7 +1014,7 @@ function commerce_coupon_order_configuration($type = 'commerce_order') {
   $instance = field_info_instance('commerce_order', $field_name, $type);
   if (empty($field)) {
     $field = commerce_coupon_reference_field($field_name, FIELD_CARDINALITY_UNLIMITED);
-    $field = field_create_field($field);
+    field_create_field($field);
   }
   if (empty($instance)) {
     $instance = array(
@@ -1048,7 +1051,7 @@ function commerce_coupon_reference_field($field_name, $cardinality) {
     'translatable' => FALSE,
     'settings' => array(
       'target_type' => 'commerce_coupon',
-      'handler' => 'base',
+      'handler' => 'coupon',
       'handler_settings' => array(),
     ),
   );
@@ -1086,8 +1089,8 @@ function commerce_coupon_commerce_cart_order_refresh($order_wrapper) {
 /**
  * Returns the number of uses for this coupon.
  *
- * @param $coupon_id
- *   Coupon id to check.
+ * @param $order_id
+ *   Id from the Commerce order.
  *
  * @return integer
  *   Returns number of uses of the coupon in all orders.
@@ -1108,6 +1111,7 @@ function commerce_coupon_get_coupons_in_order($order_id) {
  *
  * @param $commerce_order
  *  The order which is to be checked.
+ * @return array
  */
 function commerce_coupon_action_get_coupons_for_order($commerce_order) {
   if (!$commerce_order) {

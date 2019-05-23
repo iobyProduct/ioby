@@ -25,6 +25,11 @@
  * @see http://drupal.org/node/1900640
  */
 
+// Avoid issues when migrate module is disabled.
+if (!class_exists('MigrateDestinationEntity')) {
+  return;
+}
+
 /**
  * Destination class implementing migration into field_collection.
  */
@@ -84,20 +89,25 @@ class MigrateDestinationFieldCollection extends MigrateDestinationEntity {
    * @param $row
    *   Raw source data object - passed through to prepare/complete handlers.
    *
-   * @return array|false
+   * @return array|bool
    *   Array of key fields (item_id only in this case) of the collection that
    *   was saved or FALSE on failure.
    */
   public function import(stdClass $collection, stdClass $row) {
+    $updating = FALSE;
     if (isset($row->migrate_map_destid1)) {
       // We're updated an existing entity - start from the previous data.
       // entity_load() returns an array, so we get the field collection entity
-      // with array_shift().
-      $entity = array_shift(entity_load('field_collection_item', array($row->migrate_map_destid1), array(), TRUE));
-      $entity_old = clone $entity;
-      $updating = TRUE;
+      // with reset().
+      $result = entity_load('field_collection_item', array($row->migrate_map_destid1), array(), TRUE);
+      $entity = reset($result);
+      if ($entity) {
+        $entity_old = clone $entity;
+        $updating = TRUE;
+      }
     }
-    else {
+
+    if (!$updating) {
       // Skip the collection if it has no host.
       if (empty($collection->host_entity_id)) {
         throw new MigrateException('Could not find host entity of the field collection to import.');
@@ -106,7 +116,13 @@ class MigrateDestinationFieldCollection extends MigrateDestinationEntity {
       $updating = FALSE;
       $host_entity = entity_load_single($this->hostEntityType, $collection->host_entity_id);
       entity_get_controller($this->hostEntityType)->resetCache();
-      $entity->setHostEntity($this->hostEntityType, $host_entity);
+
+      if (isset($row->language)) {
+        $entity->setHostEntity($this->hostEntityType, $host_entity, $row->language, TRUE);
+      }
+      else {
+        $entity->setHostEntity($this->hostEntityType, $host_entity);
+      }
     }
 
     unset($collection->host_entity_id);
@@ -117,7 +133,7 @@ class MigrateDestinationFieldCollection extends MigrateDestinationEntity {
 
     $this->prepare($entity, $row);
 
-    // Restore fields from original field_collection_item if updating
+    // Restore fields from original field_collection_item if updating.
     if ($updating) {
       foreach ($entity as $field => $value) {
         if ('field_' != substr($field, 0, 6)) {
@@ -168,6 +184,7 @@ class MigrateDestinationFieldCollection extends MigrateDestinationEntity {
     $this->completeRollback($item_id);
     return TRUE;
   }
+
 }
 
 /**
