@@ -29,7 +29,11 @@ if ($field->field == 'field_donor_display_name') {
         $output = 'N/A';
       }
       else {
-        $output = $row->commerce_customer_profile_field_data_commerce_customer_billi . ' ' . substr($row->commerce_customer_profile_field_data_commerce_customer_billi_1, 0, 1) . '.';
+        if (isset($row->commerce_customer_profile_field_data_commerce_customer_billi_1)) {
+          $output = $row->commerce_customer_profile_field_data_commerce_customer_billi . ' ' . substr($row->commerce_customer_profile_field_data_commerce_customer_billi_1, 0, 1) . '.';
+        } else {
+          $output = $row->commerce_customer_profile_field_data_commerce_customer_billi;
+        }
         $name_parts = explode(' ', $output);
 
         $name_parts = array_map('drupal_ucfirst', $name_parts);

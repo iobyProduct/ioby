@@ -263,6 +263,24 @@ function commerce_authnet_aim_credit_form_submit($form, &$form_state) {
 
   // Determine the last 4 credit card digits from the previous transaction.
   $transaction_payload = end($transaction->payload);
+
+  // If this payment transaction does not have credit card digits, we will check
+  // for a previous transaction that has the information.
+  if (empty($transaction_payload[50])) {
+
+    // We reverse the array because Voids do not contain credit card digits,
+    // and we will have to cycle through fewer transactions this way.
+    $transaction_payloads = array_reverse($transaction->payload);
+    foreach ($transaction_payloads as $transaction_id => $payload) {
+      if ($payload[0] == 1 && !empty($payload[50])) {
+
+        // This payload has the last four digits.
+        $transaction_payload = $payload;
+        break;
+      }
+    }
+  }
+
   $credit_card = !empty($transaction_payload[50]) ? substr($transaction_payload[50], 4, 8) : '';
 
   // Make sure that the last 4 digits are available and valid.
