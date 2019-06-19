@@ -1,1 +1,0 @@
-<?php print $promo_text;
