@@ -3,9 +3,9 @@ description = Provides a field for Internet sources media (YouTube, Dailymotion,
 core = 7.x
 package = Media
 
-; Information added by drupal.org packaging script on 2012-09-22
-version = "7.x-1.2"
+; Information added by Drupal.org packaging script on 2017-07-12
+version = "7.x-1.3"
 core = "7.x"
 project = "isfield"
-datestamp = "1348297077"
+datestamp = "1499864648"
 

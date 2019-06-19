@@ -26,12 +26,12 @@ function isfield_field_formatter_info() {
   return array(
     'isfield_video' => array(
       'label' => t('ISfield embedded video'),
-      'field types' => array('text', 'link_field'),
+      'field types' => array('text', 'text_long', 'text_with_summary', 'link_field', 'url'),
       'settings' => array('dimensions' => '480x360'),
     ),
     'isfield_thumbnail' => array(
       'label' => t('ISfield thumbnail'),
-      'field types' => array('text', 'link_field'),
+      'field types' => array('text', 'text_long', 'text_with_summary', 'link_field', 'url'),
       'settings' => array('dimensions' => '120x80', 'style' => ''),
     ),
   );
@@ -138,7 +138,7 @@ function theme_isfield_formatter_isfield_thumbnail($variables) {
   if ($dimensions) {
     list($options['width'], $options['height']) = explode('x', $dimensions);
   }
-  return theme('image', array('path' => $w->thumbnail(), 'width' => $options['width'], 'height' => $options['height']));
+  return theme('image', array('path' => $w->thumbnail(FALSE), 'width' => $options['width'], 'height' => $options['height']));
 }
 
 /**
@@ -154,6 +154,46 @@ function isfield_get_media_wrapper($element) {
   }
 
   require_once DRUPAL_ROOT . '/sites/all/libraries/MediaWrapper/MediaWrapper/MediaWrapper.php';
-  return  MediaWrapper::getInstance()->getWrapper($text);
+  return MediaWrapper::getInstance()->getWrapper($text);
+}
+
+/**
+ * Implements hook_content_migrate_field_alter().
+ *
+ * Convert emvideo cck fields to text_long field with isfield_video formatter.
+ */
+function isfield_content_migrate_field_alter(&$field_value, &$instance_value) {
+  if (in_array($field_value['module'], array('emvideo'))) {
+    $field_value['module'] = 'text';
+    $field_value['type'] = 'text_long';
+  }
+}
+
+/**
+ * Implements hook_content_migrate_instance_alter().
+ */
+function isfield_content_migrate_instance_alter(&$instance_value, &$field_value) {
+  // Add widget text_textarea and isfield_video formatter to emvideo fields.
+  if (in_array($instance_value['widget']['module'], array('emvideo'))) {
+    $instance_value['widget']['module'] = 'text';
+    $instance_value['widget']['type'] = 'text_textarea';
+    foreach ($instance_value['display'] as $context => $settings) {
+      $instance_value['display'][$context]['type'] = 'isfield_video';
+    }
+  }
+}
+
+/**
+ * Implements hook_content_migrate_data_record_alter().
+ */
+function isfield_content_migrate_data_record_alter(&$record, &$field, $instance) {
+  switch ($instance['widget_type']) {
+    case 'emvideo_textfields';
+      if (!empty($record[$field['field_name'] . '_embed'])) {
+        // copy 'embed' value to 'value'
+        $record[$field['field_name'] . '_value'] = $record[$field['field_name'] . '_embed'];
+      }
+    break;
+  }
 }
 
