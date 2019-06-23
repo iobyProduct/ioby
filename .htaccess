@@ -110,10 +110,10 @@ AddType image/svg+xml svg svgz
   # Redirect any wildcard cnames to www.ioby.org
   RewriteCond %{HTTP_HOST} ioby\.org$ [NC]
   RewriteCond %{HTTP_HOST} !^www\.ioby\.org$ [NC]
-  RewriteCond %{HTTP_HOST} !^demo\.ioby\.org$ [NC]
+  # RewriteCond %{HTTP_HOST} !^demo\.ioby\.org$ [NC]
 # include kb.ioby.org in the exceptions for wildcard redirect (3/10/2016)
-  RewriteCond %{HTTP_HOST} !^kb\.ioby\.org$ [NC]
-  RewriteCond %{HTTP_HOST} !^dev\.ioby\.org$ [NC]
+  # RewriteCond %{HTTP_HOST} !^kb\.ioby\.org$ [NC]
+  # RewriteCond %{HTTP_HOST} !^dev\.ioby\.org$ [NC]
   RewriteRule ^ https://www.ioby.org%{REQUEST_URI} [L,R=301]
 
   # Make sure any else going to ioby.org is redirected to https if it isn't already
