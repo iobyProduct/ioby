@@ -1,3 +1,0 @@
-<FilesMatch "\.(wsdl\.xml)$">
-  deny from all
-</FilesMatch>
