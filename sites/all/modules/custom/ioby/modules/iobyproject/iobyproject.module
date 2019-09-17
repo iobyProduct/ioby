@@ -926,7 +926,7 @@ function iobyproject_donation_form($form, &$form_state) {
 
     $form['gratuity'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Add support for ioby.').' <a href="?width=500&inline=true#gratuity-info-popup" class="colorbox-inline">'.t('What\'s this?').'</a>',
+      '#title' => variable_get('ioby_gratuity_checkbox_label', t('Add support for ioby.')).' <a href="?width=500&inline=true#gratuity-info-popup" class="colorbox-inline">'.t('What\'s this?').'</a>',
       '#default_value' => variable_get('ioby_gratuity_checkbox_default', 1),
       '#prefix' => '<div style="display:none"><div id="gratuity-info-popup" class="region-content content">'.$iobypopup_gratuity_info_text.'</div></div>',
     );
