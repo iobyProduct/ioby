@@ -1,5 +1,9 @@
 <?php
 
+define('IOBY_GRATUITY_MODE_NONE', 0);
+define('IOBY_GRATUITY_MODE_AUTOMATIC', 1);
+define('IOBY_GRATUITY_MODE_MANUAL', 2);
+
 module_load_include('inc', 'node', 'node.pages');
 module_load_include('module', 'node', 'node');
 $w = module_load_include('inc', 'ioby', 'includes/ioby');
@@ -90,6 +94,30 @@ function ioby_menu() {
       'type' => MENU_NORMAL_ITEM,
       'page callback' => 'drupal_get_form',
       'page arguments' => array('iobypopup_settings'),
+    );
+    
+    
+    $items['admin/commerce/ioby'] = array(
+      'title' => 'Ioby',
+      'description' => 'Configure Ioby settings.',
+      'page callback' => 'system_admin_menu_block_page',
+      'access arguments' => array('access administration pages'),
+      'type' => MENU_NORMAL_ITEM,
+      'weight' => 55,
+      'file path' => drupal_get_path('module', 'system'),
+      'file' => 'system.admin.inc',
+    );
+    
+    // Add a ioby general settings form.
+    $items['admin/commerce/ioby/settings'] = array(
+      'title' => 'Settings',
+      'description' => 'Custom Store Settings',
+      'file' => 'includes/ioby.settings.inc',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('ioby_settings_form'),
+      'access arguments' => array('configure store'),
+      'type' => MENU_NORMAL_ITEM,
+      //'weight' => 50,
     );
 
     return $items;
@@ -1081,67 +1109,72 @@ function ioby_cart_view() {
         return $content;
       }
 
-      $gratuity_override = !empty($gratuity->field_override['und'][0]['value']);
+      if(variable_get('ioby_gratuity_mode', IOBY_GRATUITY_MODE_AUTOMATIC) == IOBY_GRATUITY_MODE_AUTOMATIC){
+        $gratuity_override = !empty($gratuity->field_override['und'][0]['value']);
 
-      if(!$gratuity_override) {
-        $gratuity_amount = $gratuity->commerce_price['und'][0]['amount'];
-        $order_amount = $order->commerce_order_total['und'][0]['amount'];
-        $amount = $order_amount - $gratuity_amount;
+        if(!$gratuity_override) {
+          $gratuity_amount = $gratuity->commerce_price['und'][0]['amount'];
+          $order_amount = $order->commerce_order_total['und'][0]['amount'];
+          $amount = $order_amount - $gratuity_amount;
 
-        // if everything has  been removed, skip adding the gratuity..
-        if($amount > 0) {
-          $amount = commerce_currency_amount_to_decimal($amount, 'USD');
-          $amount = $amount*.2;
-          $price =  commerce_currency_decimal_to_amount($amount, 'USD');
-
-          // If equal to or more than $10.00, cap at $10.00
-          if($price >= '1000'){
-            $price = '1000';
+          // if everything has  been removed, skip adding the gratuity..
+          if($amount > 0) {
+            $amount = commerce_currency_amount_to_decimal($amount, 'USD');
+            $amount = $amount*.2;
+            $price =  commerce_currency_decimal_to_amount($amount, 'USD');
+            // If equal to or more than $10.00, cap at $10.00
+            if($price >= '1000'){
+              $price = '1000';
+            }
           }
+
+          $gratuity->commerce_price['und'][0]['amount'] = $price;
+          commerce_product_save($gratuity);
+
+          commerce_cart_order_refresh($order);
         }
-
-        $gratuity->commerce_price['und'][0]['amount'] = $price;
-        commerce_product_save($gratuity);
-
-        commerce_cart_order_refresh($order);
       }
+      
     }
     // reload order for changes
     commerce_cart_order_load($user->uid);
-    // no gratuity present.. check to see if it was deleted.
-    if (!array_key_exists('und', $order->field_order_gratuity) || $order->field_order_gratuity['und'][0]['value'] != 1) {
+    
+    if(variable_get('ioby_gratuity_mode', IOBY_GRATUITY_MODE_AUTOMATIC) == IOBY_GRATUITY_MODE_AUTOMATIC){
+      // no gratuity present.. check to see if it was deleted.
+      if (!array_key_exists('und', $order->field_order_gratuity) || $order->field_order_gratuity['und'][0]['value'] != 1) {
 
-      // get the amount
+        // get the amount
 
-      $amount = $order->commerce_order_total['und'][0]['amount'];
-      $amount =commerce_currency_amount_to_decimal($amount, 'USD');
-      $amount = $amount * .2;
-      $price = commerce_currency_decimal_to_amount($amount, 'USD');
+        $amount = $order->commerce_order_total['und'][0]['amount'];
+        $amount =commerce_currency_amount_to_decimal($amount, 'USD');
+        $amount = $amount * .2;
+        $price = commerce_currency_decimal_to_amount($amount, 'USD');
 
-      // If equal to or more than $10.00, cap at $10.00
-      if($price >= '1000'){
-        $price = '1000';
-      }
+        // If equal to or more than $10.00, cap at $10.00
+        if($price >= '1000'){
+          $price = '1000';
+        }
 
-      // create gratuity..
-      $gratuity = commerce_product_new('gratuity');
+        // create gratuity..
+        $gratuity = commerce_product_new('gratuity');
 
-      $gratuity->sku = 'order_'.$order->order_number.'_date_'.time();
-      $gratuity->title = 'ioby gratuity from order';
-      $gratuity->uid = $user->uid;
+        $gratuity->sku = 'order_'.$order->order_number.'_date_'.time();
+        $gratuity->title = 'ioby gratuity from order';
+        $gratuity->uid = $user->uid;
 
-      $gratuity->commerce_price['und'][0]['amount'] = $price;
-      $gratuity->commerce_price['und'][0]['currency_code'] = 'USD';
+        $gratuity->commerce_price['und'][0]['amount'] = $price;
+        $gratuity->commerce_price['und'][0]['currency_code'] = 'USD';
 
-      commerce_product_save($gratuity);
+        commerce_product_save($gratuity);
 
-      if (!empty($gratuity->product_id)) {
-        // insert gratuity to cart
-        commerce_cart_product_add($user->uid, commerce_product_line_item_new($gratuity), 1);
+        if (!empty($gratuity->product_id)) {
+          // insert gratuity to cart
+          commerce_cart_product_add($user->uid, commerce_product_line_item_new($gratuity), 1);
 
-        // save the gratuity field
-        $order->field_order_gratuity['und'][0]['value'] = 1;
-        commerce_order_save($order);
+          // save the gratuity field
+          $order->field_order_gratuity['und'][0]['value'] = 1;
+          commerce_order_save($order);
+        }
       }
     }
 
