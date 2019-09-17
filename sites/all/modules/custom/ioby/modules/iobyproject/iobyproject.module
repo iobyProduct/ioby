@@ -912,9 +912,31 @@ function iobyproject_donation_form($form, &$form_state) {
     '#default_value' => '',
     '#size' => 10,
     );
+
+  if(variable_get('ioby_gratuity_mode', IOBY_GRATUITY_MODE_AUTOMATIC) == IOBY_GRATUITY_MODE_MANUAL){
+    $form['gratuity_value'] = array(
+      '#type' => 'textfield',
+      '#field_prefix' => '$',
+      '#default_value' => '',
+      '#size' => 10,
+    );
+    
+    $iobypopup_gratuity_info = variable_get('iobypopup_gratuity_info', array());
+    $iobypopup_gratuity_info_text = isset($iobypopup_gratuity_info['value']) ? check_markup($iobypopup_gratuity_info['value'], $iobypopup_gratuity_info['format']) : '';
+
+    $form['gratuity'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Add support for ioby.').' <a href="?width=500&inline=true#gratuity-info-popup" class="colorbox-inline">'.t('What\'s this?').'</a>',
+      '#default_value' => variable_get('ioby_gratuity_checkbox_default', 1),
+      '#prefix' => '<div style="display:none"><div id="gratuity-info-popup" class="region-content content">'.$iobypopup_gratuity_info_text.'</div></div>',
+    );
+    
+    drupal_add_js(drupal_get_path('module', 'iobyproject') . '/js/ioby_gratuity.js', array('scope' => 'footer'));
+  }
+  
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => 'Donate to this project',
+    '#value' => variable_get('ioby_checkout_button_text', t('Donate to this project')),
     '#attributes' => array( 'class' => array('button'))
     );
   return $form;
@@ -973,8 +995,81 @@ function iobyproject_donation_form_submit($form, &$form_state) {
   $order = commerce_order_new($account->uid, 'pending');
 
   commerce_cart_product_add($account->uid, commerce_product_line_item_new($product), TRUE);
+  
+  // add gratuity if gratuity mode is set to Manual
+  if(!empty($form_state['values']['gratuity']) && $form_state['values']['gratuity_value'] > 0) {
 
-  drupal_goto('cart');
+    $gratuity_price = $form_state['values']['gratuity_value'];
+    $gratuity_amount = commerce_currency_decimal_to_amount($gratuity_price, 'USD');
+    
+    // existing user order (at least loads just created order)
+    $existing_user_order = commerce_cart_order_load($user->uid);
+
+    // If the cart is not empty...
+    if ($existing_user_order && !empty($existing_user_order->commerce_line_items)) {
+      
+      // Look for gratuity
+      $existing_gratuity = FALSE;
+      $existing_gratuity_line_item = FALSE;
+      foreach($existing_user_order->commerce_line_items['und'] as $li) {
+
+        $line_item = commerce_line_item_load($li['line_item_id']);
+
+        // ignore coupon lines
+        if(preg_match('/coupon/', $line_item->type)) {
+          continue;
+        }
+        $product_id = $line_item->commerce_product['und'][0]['product_id'];
+
+        $product_item = commerce_product_load($product_id);
+        if($product_item->type == 'gratuity') {
+          $existing_gratuity_line_item = $li;
+          $existing_gratuity = $product_item;
+          break;
+        }
+      }
+      
+      // has gratuity been added already?
+      if($existing_gratuity) {
+
+        $gratuity_override = !empty($existing_gratuity->field_override['und'][0]['value']);
+
+        if(!$gratuity_override) {
+          $existing_gratuity_amount = $existing_gratuity->commerce_price['und'][0]['amount'];
+          $amount = $gratuity_amount + $existing_gratuity_amount;
+
+          $existing_gratuity->commerce_price['und'][0]['amount'] = $amount;
+          commerce_product_save($existing_gratuity);
+        }
+        
+      } else {
+        if (!array_key_exists('und', $existing_user_order->field_order_gratuity) || $existing_user_order->field_order_gratuity['und'][0]['value'] != 1) {
+          $gratuity = commerce_product_new('gratuity');
+
+          $gratuity->sku = 'order_'.$existing_user_order->order_number.'_date_'.time();
+          $gratuity->title = 'ioby gratuity from order';
+          $gratuity->uid = $account->uid;
+
+          $gratuity->commerce_price['und'][0]['amount'] = $gratuity_amount;
+          $gratuity->commerce_price['und'][0]['currency_code'] = 'USD';
+
+          commerce_product_save($gratuity);
+
+          if (!empty($gratuity->product_id)) {
+            // insert gratuity to cart
+            commerce_cart_product_add($account->uid, commerce_product_line_item_new($gratuity), 1);
+
+            // save the gratuity field
+            $existing_user_order->field_order_gratuity['und'][0]['value'] = 1;
+            commerce_order_save($existing_user_order);
+          }
+        }
+      }
+    } 
+
+  }
+
+  drupal_goto(variable_get('ioby_checkout_button_redirect', 'cart'));
 }
 
 
