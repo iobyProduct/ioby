@@ -33,6 +33,11 @@
         $('#iobyproject-donation-form input#edit-gratuity-value').val(gratuity);
       });
       
+      // add/remove disabled class for proper styling
+      if(!$('#iobyproject-donation-form input#edit-gratuity:checked').length){
+        $('#iobyproject-donation-form .form-item-gratuity-value').addClass('disabled');
+      }
+      
       $('#iobyproject-donation-form input#edit-gratuity').change(function() {
         if($(this).is(':checked')) {
           $('#iobyproject-donation-form .form-item-gratuity-value').removeClass('disabled');

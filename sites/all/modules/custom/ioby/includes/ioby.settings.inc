@@ -28,6 +28,18 @@ function ioby_settings_form($form, &$form_state) {
     '#default_value' => variable_get('ioby_gratuity_mode', IOBY_GRATUITY_MODE_AUTOMATIC),
     '#options' => $gratuity_modes,
   );
+  
+  $form['project_page_settings']['ioby_gratuity_checkbox_label'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Gratuity checkbox label'),
+    '#default_value' => variable_get('ioby_gratuity_checkbox_label', t('Add support for ioby.')),
+    '#description' => t('"What\'s this?" popup link will be append to the label.'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="ioby_gratuity_mode"]' => array('value' => IOBY_GRATUITY_MODE_MANUAL),
+      ),
+    ),
+  );
 
   $form['project_page_settings']['ioby_gratuity_checkbox_default'] = array(
     '#type' => 'radios',
