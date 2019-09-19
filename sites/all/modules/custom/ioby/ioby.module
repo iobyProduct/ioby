@@ -1066,6 +1066,8 @@ function ioby_cart_view() {
       'iobypopup' => array(
         'iobypopupGratuityInfo' => isset($iobypopup_gratuity_info['value']) ? check_markup($iobypopup_gratuity_info['value'], $iobypopup_gratuity_info['format']) : '',
         'iobypopupGratuityRemove' => isset($iobypopup_gratuity_remove['value']) ? check_markup($iobypopup_gratuity_remove['value'], $iobypopup_gratuity_remove['format']) : '',
+        'iobypopupGratuityTitle' => variable_get('ioby_gratuity_cart_label', t('ioby gratuity from order')),
+        'iobypopupGratuityLinkText' => variable_get('ioby_gratuity_cart_link', t("What\'s this?")),
       )
     ),
     'setting'
@@ -1159,7 +1161,7 @@ function ioby_cart_view() {
         $gratuity = commerce_product_new('gratuity');
 
         $gratuity->sku = 'order_'.$order->order_number.'_date_'.time();
-        $gratuity->title = 'ioby gratuity from order';
+        $gratuity->title = variable_get('ioby_gratuity_cart_label', t('ioby gratuity from order'));
         $gratuity->uid = $user->uid;
 
         $gratuity->commerce_price['und'][0]['amount'] = $price;
