@@ -921,15 +921,20 @@ function iobyproject_donation_form($form, &$form_state) {
       '#size' => 10,
     );
     
-    $iobypopup_gratuity_info = variable_get('iobypopup_gratuity_info', array());
-    $iobypopup_gratuity_info_text = isset($iobypopup_gratuity_info['value']) ? check_markup($iobypopup_gratuity_info['value'], $iobypopup_gratuity_info['format']) : '';
-
     $form['gratuity'] = array(
       '#type' => 'checkbox',
-      '#title' => variable_get('ioby_gratuity_checkbox_label', t('Add support for ioby.')).' <a href="?width=500&inline=true#gratuity-info-popup" class="colorbox-inline">'.t('What\'s this?').'</a>',
+      '#title' => variable_get('ioby_gratuity_checkbox_label', t('Add support for ioby.')),
       '#default_value' => variable_get('ioby_gratuity_checkbox_default', 1),
-      '#prefix' => '<div style="display:none"><div id="gratuity-info-popup" class="region-content content">'.$iobypopup_gratuity_info_text.'</div></div>',
     );
+    
+    $label_link_text = variable_get('ioby_gratuity_checkbox_link', t("What\'s this?"));
+    if(!empty($label_link_text)) {
+      $iobypopup_gratuity_info = variable_get('iobypopup_gratuity_info', array());
+      $iobypopup_gratuity_info_text = isset($iobypopup_gratuity_info['value']) ? check_markup($iobypopup_gratuity_info['value'], $iobypopup_gratuity_info['format']) : '';
+      
+      $form['gratuity']['#title'] .= ' <a href="?width=500&inline=true#gratuity-info-popup" class="colorbox-inline">'.$label_link_text.'</a>';
+      $form['gratuity']['#prefix'] = '<div style="display:none"><div id="gratuity-info-popup" class="region-content content">'.$iobypopup_gratuity_info_text.'</div></div>';
+    }
     
     drupal_add_js(drupal_get_path('module', 'iobyproject') . '/js/ioby_gratuity.js', array('scope' => 'footer'));
   }
@@ -1047,7 +1052,7 @@ function iobyproject_donation_form_submit($form, &$form_state) {
           $gratuity = commerce_product_new('gratuity');
 
           $gratuity->sku = 'order_'.$existing_user_order->order_number.'_date_'.time();
-          $gratuity->title = 'ioby gratuity from order';
+          $gratuity->title = variable_get('ioby_gratuity_cart_label', t('ioby gratuity from order'));
           $gratuity->uid = $account->uid;
 
           $gratuity->commerce_price['und'][0]['amount'] = $gratuity_amount;
