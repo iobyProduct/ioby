@@ -307,6 +307,39 @@ button[type=submit]{
 #highlighted{
     width: 70% !important;
 }
+
+.page-checkout, .page-cart {
+  @media screen and (max-width: 960px){
+    #highlighted{
+        width: 100% !important;
+        
+        #block-commerce-checkout-progress-indication {
+          height: auto;
+        }
+        
+        #block-commerce-checkout-progress-indication .item-list ul {
+          display: block;
+          height: auto;
+        }
+        
+        #block-commerce-checkout-progress-indication .item-list ul li {
+          float: none;
+          display: block !important;
+          height: auto;
+          margin: 0 !important;
+          padding-bottom: 12px;
+          font-size: 16px !important;
+          line-height: 22px;
+        }
+        
+        #block-commerce-checkout-progress-indication .item-list ul li:not(:last-child):after {
+          display: none;
+        }
+    }
+        
+  }
+}
+
 .node-type-project-2 input[type=radio]{
     width: auto !important;
     margin-right: 8px;
