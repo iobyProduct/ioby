@@ -202,10 +202,10 @@
       }
 
       //gratuity "what's this?" popup
-      if ($.isFunction($.colorbox) && Drupal.settings.iobypopup != undefined) {
-        $(".page-cart .views-field-line-item-title:contains('gratuity')").once('linked')
+      if ($.isFunction($.colorbox) && Drupal.settings.iobypopup != undefined && Drupal.settings.iobypopup.iobypopupGratuityLinkText != undefined) {
+        $(".page-cart .views-field-line-item-title:contains('"+Drupal.settings.iobypopup.iobypopupGratuityTitle+"')").once('linked')
         .prepend('<div style="display:none"><div id="gratuity-info-popup" class="region-content content">' + Drupal.settings.iobypopup.iobypopupGratuityInfo + '</div></div>')
-        .append(' <a href="#gratuity-info-popup" class="colorbox-load">what\'s this?</a>').children("a")
+        .append(' <a href="#gratuity-info-popup" class="colorbox-load">'+Drupal.settings.iobypopup.iobypopupGratuityLinkText+'</a>').children("a")
         .colorbox({
           innerWidth:500,
           inline:true
