@@ -250,19 +250,73 @@ form#iobyproject-donation-form {
       font-size: 400%;
       text-align: left;
 //        line-height: 1.1em;
-height:72px;
-line-height: 1;
-vertical-align: baseline;
-margin-left: 8px;
-//        width: 150px;
-width: 80%;
-  @media (max-width: $small-break) {
-    width: 60%;
-    max-width: 60%;
-    min-width: 60%;
+    height:72px;
+    line-height: 1;
+    vertical-align: baseline;
+    margin-left: 8px;
+    //        width: 150px;
+    width: 80%;
+      @media (max-width: $small-break) {
+        width: 60%;
+        max-width: 60%;
+        min-width: 60%;
+      }
+    }
   }
-}
-}
+  
+  .form-item-gratuity-value {
+    
+    padding-top: 10px;
+    padding-left: 40px;
+    
+    .field-prefix {
+      color: $orange;
+      font-family: $barlow, Arial Narrow, sans-serif;
+      font-size:150%;
+      font-weight: bold;
+      line-height: 1em;
+      *vertical-align:middle;
+    }
+    
+    input {
+      border: 1px solid $orange;
+      color: $active;
+      padding:5px;
+      font-size: 150%;
+      text-align: left;
+      line-height: 1;
+      vertical-align: baseline;
+      margin-left: 8px;
+      //        width: 150px;
+      width: 80%;
+      @media (max-width: $small-break) {
+        width: 60%;
+        max-width: 60%;
+        min-width: 60%;
+      }
+    }
+  }
+  
+  .form-item-gratuity-value.disabled {
+    input {
+      color: $smoke;
+      border: 1px solid $light;
+    }
+    .field-prefix {
+      color: $smoke;
+    }
+  }
+  
+  .form-item-gratuity {
+    
+    padding-bottom: 10px;
+    padding-left: 40px;
+    
+    input {
+      width: auto;
+    }
+  }
+  
 }
 
 ul.donation_list {
