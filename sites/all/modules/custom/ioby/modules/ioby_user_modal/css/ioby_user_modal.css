@@ -50,3 +50,7 @@ ul.ioby-user-modal-tabs li.current:after {
 .ioby-user-modal-tab-content.current{
   display: inherit;
 }
+
+.ctools-modal-content.ctools-modal-ioby_user-modal-content .modal-header {
+  background: none;
+}
